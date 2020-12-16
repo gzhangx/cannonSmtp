@@ -7,16 +7,11 @@ const server = new SMTPServer({
     name: 'CanonHome',
     authOptional : true,
     onAuth: (auth, session, callback) => {
-        console.log(auth);
-        console.log(session);
         callback(null, {
             user:'good'
         })
     },
     onMailFrom(address, session, callback) {
-        if (address.address !== "allowed@example.com") {
-        }
-        console.log(address);
         return callback(); // Accept the address
     },
     onRcptTo(address, session, callback) {
@@ -34,19 +29,17 @@ const server = new SMTPServer({
                 from: creds.from,
                 // Comma separated list of recipients
     
-                to: [],
+                subject: new Date().toISOString()+' Scan from Canon',
+                to: session.envelope.rcptTo.map(r=>r.address),
                 //subject: 'Nodemailer is unicode friendly ✔',
                 text: '',
                 //html:'<p>testtt test gg',
             };
         }
-    
-        console.log(address);
-        session.message.to.push(address.address);
         return callback();
     },
     onData(stream, session, callback) {
-        console.log('on data');
+        session.message.to = session.envelope.rcptTo.map(r => r.address);
         stream.on('data', data => {
             //console.log(data);
             session.message.text += data.toString();
