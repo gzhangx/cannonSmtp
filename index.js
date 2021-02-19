@@ -54,7 +54,7 @@ console.log(address);
         })
         stream.on("end", () => {
             session.message.attachments = [{
-                raw: session.message.text.//replace(/From: pi@raspberrypi4/,'zhxfamily@outlook.com'),
+               raw: session.message.text.//replace(/From: pi@raspberrypi4/,'zhxfamily@outlook.com'),
 replace(/From: .*@raspberry.*\r\n/,'zhxfamily@outlook.com'),
             }];
             session.message.text = '';
