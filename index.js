@@ -6,12 +6,20 @@ const creds = require('./creds.json');
 const server = new SMTPServer({
     name: 'CanonHome',
     authOptional : true,
+    onConnect1: (session, callback)=>{ 
+console.log('connect');
+console.log(session);
+    },
     onAuth: (auth, session, callback) => {
+console.log('auth');
+console.log(auth);
         callback(null, {
             user:'good'
         })
     },
     onMailFrom(address, session, callback) {
+console.log('main from');
+console.log(address);
         return callback(); // Accept the address
     },
     onRcptTo(address, session, callback) {
@@ -41,14 +49,17 @@ const server = new SMTPServer({
     onData(stream, session, callback) {
         session.message.to = session.envelope.rcptTo.map(r => r.address);
         stream.on('data', data => {
-            //console.log(data);
+            console.log(data);
             session.message.text += data.toString();
         })
         stream.on("end", () => {
             session.message.attachments = [{
-                raw: session.message.text,
+                raw: session.message.text.//replace(/From: pi@raspberrypi4/,'zhxfamily@outlook.com'),
+replace(/From: .*@raspberry.*\r\n/,'zhxfamily@outlook.com'),
             }];
             session.message.text = '';
+console.log('sending email');
+console.log(session.message);
             session.transporter.sendMail(session.message).then(res=>{
                 console.log(res);
                  }).catch(err=>console.log(err));

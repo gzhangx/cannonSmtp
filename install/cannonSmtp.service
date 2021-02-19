@@ -4,7 +4,7 @@ After=network.target
 
 #log with journalctl -u cannonSmtp.service
 [Service]
-ExecStart=/usr/local/bin/node /home/pi/cannonSmtp/index.js 
+ExecStart=/usr/bin/node /home/pi/cannonSmtp/index.js 
 WorkingDirectory=/home/pi/cannonSmtp
 StandardOutput=inherit
 StandardError=inherit
