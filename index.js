@@ -42,10 +42,11 @@ console.log(address);
     onData(stream, session, callback) {
         //session.message.to =  session.envelope.rcptTo.map(r => r.address);
         stream.on('data', data => {
-            console.log(data);
+            //console.log(data);
             session.message.text += data.toString();
         })
         stream.on("end", async () => {
+            const parsed = await simpleParser(session.message.text);
             const emailMessage = {
                 senderAddress: creds.from,
                 content: {
@@ -60,19 +61,20 @@ console.log(address);
                 },
                 recipients: {
                     to: session.envelope.rcptTo // [{ address: "gzhangx@hotmail.com" }],
-                }
+                },
+                attachments: parsed.attachments.map(f => {
+                    return {
+                        name: f.filename,
+                        contentType: f.contentType,
+                        contentInBase64: f.content.toString('base64')
+                    }
+                })
             };
-            const parsed = await simpleParser(session.message.text);
-            parsed.attachments.map(f => {
-                return {                                            
-                    name: f.filename,
-                    contentType: f.contentType,
-                    contentInBase64: f.content.toString('base64')
-                }
-            })
             
-console.log('sending email');
-console.log(session.message);
+            
+            
+            console.log('sending email', emailMessage );
+
             const poller = await session.transporter.beginSend(emailMessage);
             const result = await poller.pollUntilDone();
             console.log(result)
