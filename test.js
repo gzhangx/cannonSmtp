@@ -1,6 +1,5 @@
 
 const nodemailer = require('nodemailer');
-const creds = require('./creds.json');
 
             const transporter = nodemailer.createTransport({
                 service: 'postfix',
@@ -11,7 +10,7 @@ const creds = require('./creds.json');
                 tls: { rejectUnauthorized: false }
             });
             const message = {
-                from: creds.from,
+                from: 'scan@localhost',
                 // Comma separated list of recipients
 
                 subject: new Date().toISOString() + ' Scan from Canon',

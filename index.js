@@ -1,6 +1,5 @@
 const SMTPServer = require("smtp-server").SMTPServer;
 const nodemailer = require('nodemailer');
-const creds = require('./creds.json');
 
 
 const server = new SMTPServer({
@@ -40,7 +39,7 @@ console.log(address);
                     tls: { rejectUnauthorized: false }                
             });
             session.message = {
-                from: creds.from,
+                from: 'scan@localhost',
                 // Comma separated list of recipients
     
                 subject: new Date().toISOString()+' Scan from Canon',
