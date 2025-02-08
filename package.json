@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@azure/communication-email": "^1.0.0",
+    "mailparser": "^3.7.2",
     "nodemailer": "^6.4.10",
     "smtp-server": "^3.8.0"
   }

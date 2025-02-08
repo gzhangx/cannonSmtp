@@ -1,6 +1,8 @@
 const SMTPServer = require("smtp-server").SMTPServer;
-const nodemailer = require('nodemailer');
-
+//const nodemailer = require('nodemailer');
+const creds = require('./creds.json');
+const connectionString = creds.msauth.connectionString;
+const simpleParser = require('mailparser').simpleParser;
 
 const server = new SMTPServer({
     name: 'CanonHome',
@@ -23,27 +25,13 @@ console.log(address);
     },
     onRcptTo(address, session, callback) {
         if (!session.transporter) {
-            session.transporter = nodemailer.createTransport({
-                // host: 'smtp.office365.com',
-                // secureConnection: false, // TLS requires secureConnection to be false
-                // port: 587, // port for secure SMTP
-                // tls: {
-                //     ciphers: 'SSLv3'
-                // },
-                // auth: creds.msauth                
-                    service: 'postfix',
-                    host: 'localhost',
-                    secure: false,
-                    port: 25,
-                    auth: { user: 'scan', pass: 'scan' },
-                    tls: { rejectUnauthorized: false }                
-            });
+            session.transporter = new EmailClient(connectionString);
             session.message = {
-                from: 'scan@localhost',
+                from: creds.from,
                 // Comma separated list of recipients
     
                 subject: new Date().toISOString()+' Scan from Canon',
-                to: 'scan@localhost',//session.envelope.rcptTo.map(r=>r.address),
+                to: session.envelope.rcptTo.map(r=>r.address),
                 //subject: 'Nodemailer is unicode friendly ✔',
                 text: '',
                 //html:'<p>testtt test gg',
@@ -57,17 +45,37 @@ console.log(address);
             console.log(data);
             session.message.text += data.toString();
         })
-        stream.on("end", () => {
-            session.message.attachments = [{
-               raw: session.message.text.//replace(/From: pi@raspberrypi4/,'zhxfamily@outlook.com'),
-replace(/From: .*@raspberry.*\r\n/,'zhxfamily@outlook.com'),
-            }];
-            session.message.text = '';
+        stream.on("end", async () => {
+            const emailMessage = {
+                senderAddress: creds.from,
+                content: {
+                    subject: session.message.subject,
+                    plainText: session.message.subject,
+                    html: `
+			<html>
+				<body>
+					<h1>${session.message.subject}</h1>
+				</body>
+			</html>`,
+                },
+                recipients: {
+                    to: session.envelope.rcptTo // [{ address: "gzhangx@hotmail.com" }],
+                }
+            };
+            const parsed = await simpleParser(session.message.text);
+            parsed.attachments.map(f => {
+                return {                                            
+                    name: f.filename,
+                    contentType: f.contentType,
+                    contentInBase64: f.content.toString('base64')
+                }
+            })
+            
 console.log('sending email');
 console.log(session.message);
-            session.transporter.sendMail(session.message).then(res=>{
-                console.log(res);
-                 }).catch(err=>console.log(err));
+            const poller = await client.beginSend(emailMessage);
+            const result = await poller.pollUntilDone();
+            console.log(result)
             callback();   
         });
       }
