@@ -3,7 +3,7 @@ const SMTPServer = require("smtp-server").SMTPServer;
 const creds = require('./creds.json');
 const connectionString = creds.msauth.connectionString;
 const simpleParser = require('mailparser').simpleParser;
-
+const { EmailClient } = require("@azure/communication-email");
 const server = new SMTPServer({
     name: 'CanonHome',
     authOptional : true,
