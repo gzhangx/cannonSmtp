@@ -4,10 +4,10 @@
 const nodemailer = require('nodemailer');
 
             const transporter = nodemailer.createTransport({
-                service: 'postfix',
-                host: 'localhost',
+                
+                host: '192.168.0.40',
                 secure: false,
-                port: 25,
+                port: 1587,
                 auth: { user: 'scan', pass: 'scan' },
                 tls: { rejectUnauthorized: false }
             });
@@ -16,20 +16,26 @@ const nodemailer = require('nodemailer');
                 // Comma separated list of recipients
 
                 subject: new Date().toISOString() + ' Scan from Canon',
-                to: 'scan@localhost',
+                to: 'gzhangx@hotmail.com',
                 
                 text: 'test',
+                //attachments: [
+                    //{
+                        //filename: 'image1.jpeg',
+                        //path: __dirname + '/image1.jpeg'
+                    //}
+                //]
             };        
     
         
         
             
             
-            //transporter.sendMail(message).then(res => {
-                //console.log(res);
-            //}).catch(err => console.log(err));
+            transporter.sendMail(message).then(res => {
+                console.log(res);
+            }).catch(err => console.log(err));
             
-            
+            /*
 const { EmailClient } = require("@azure/communication-email");
 const creds = require('./creds.json');
 const connectionString = creds.msauth.connectionString;
@@ -57,5 +63,4 @@ async function main() {
     const result = await poller.pollUntilDone();
     console.log(result)
 }
-
-main();
+*/

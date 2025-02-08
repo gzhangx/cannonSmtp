@@ -73,7 +73,7 @@ console.log(address);
             
             
             
-            console.log('sending email', emailMessage );
+            //console.log('sending email', emailMessage );
 
             const poller = await session.transporter.beginSend(emailMessage);
             const result = await poller.pollUntilDone();
