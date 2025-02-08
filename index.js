@@ -25,20 +25,26 @@ console.log(address);
     onRcptTo(address, session, callback) {
         if (!session.transporter) {
             session.transporter = nodemailer.createTransport({
-                host: 'smtp.office365.com',
-                secureConnection: false, // TLS requires secureConnection to be false
-                port: 587, // port for secure SMTP
-                tls: {
-                    ciphers: 'SSLv3'
-                },
-                auth: creds.msauth
+                // host: 'smtp.office365.com',
+                // secureConnection: false, // TLS requires secureConnection to be false
+                // port: 587, // port for secure SMTP
+                // tls: {
+                //     ciphers: 'SSLv3'
+                // },
+                // auth: creds.msauth                
+                    service: 'postfix',
+                    host: 'localhost',
+                    secure: false,
+                    port: 25,
+                    auth: { user: 'scan', pass: 'scan' },
+                    tls: { rejectUnauthorized: false }                
             });
             session.message = {
                 from: creds.from,
                 // Comma separated list of recipients
     
                 subject: new Date().toISOString()+' Scan from Canon',
-                to: session.envelope.rcptTo.map(r=>r.address),
+                to: 'scan@localhost',//session.envelope.rcptTo.map(r=>r.address),
                 //subject: 'Nodemailer is unicode friendly ✔',
                 text: '',
                 //html:'<p>testtt test gg',
@@ -47,7 +53,7 @@ console.log(address);
         return callback();
     },
     onData(stream, session, callback) {
-        session.message.to = session.envelope.rcptTo.map(r => r.address);
+        //session.message.to =  session.envelope.rcptTo.map(r => r.address);
         stream.on('data', data => {
             console.log(data);
             session.message.text += data.toString();
