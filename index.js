@@ -41,12 +41,13 @@ const server = new SMTPServer({
                 // Comma separated list of recipients
 
                 subject: new Date().toISOString() + ' Scan from Canon',
-                to: address.map(r => r.address),
+                to: [],
                 //subject: 'Nodemailer is unicode friendly ✔',
                 text: '',
                 //html:'<p>testtt test gg',
             };
-        }
+        }        
+        session.message.to.push(address.address);
         return callback();
     },
     onData(stream, session, callback) {
