@@ -18,11 +18,13 @@ const server = new SMTPServer({
         })
     },
     onMailFrom(address, session, callback) {
-        console.log('main from');
-        console.log(address);
+        console.log('main from', address, session.originalFrom);
+        console.log(address); //{address:xxx, args: false}
+        session.originalFrom = address.address;
         return callback(); // Accept the address
     },
     onRcptTo(address, session, callback) {
+        console.log(address); //{address:xxx, args: false}
         if (!session.transporter) {
             session.transporter = nodemailer.createTransport({
                 service: "Gmail",
@@ -39,7 +41,7 @@ const server = new SMTPServer({
                 // Comma separated list of recipients
 
                 subject: new Date().toISOString() + ' Scan from Canon',
-                to: session.envelope.rcptTo.map(r => r.address),
+                to: address.map(r => r.address),
                 //subject: 'Nodemailer is unicode friendly ✔',
                 text: '',
                 //html:'<p>testtt test gg',
@@ -55,8 +57,8 @@ const server = new SMTPServer({
         })
         stream.on("end", () => {
             session.message.attachments = [{
-                raw: session.message.text.//replace(/From: pi@raspberrypi4/,'zhxfamily@outlook.com'),
-                    replace(/From: .*@raspberry.*\r\n/, creds.google.user),
+                raw: session.message.text.replace(new RegExp('From: ' + session.originalFrom),creds.google.user)
+                    //.replace(/From: .*@raspberry.*\r\n/, creds.google.user),
             }];
             session.message.text = '';
             console.log('sending email');
