@@ -58,7 +58,7 @@ const server = new SMTPServer({
         })
         stream.on("end", () => {
             session.message.attachments = [{
-                raw: session.message.text.replace(new RegExp('From: ' + session.originalFrom),creds.google.user)
+                raw: session.message.text.replace(new RegExp(session.originalFrom),creds.google.user)
                     //.replace(/From: .*@raspberry.*\r\n/, creds.google.user),
             }];
             session.message.text = '';
