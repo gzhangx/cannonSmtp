@@ -7,21 +7,20 @@ const fs = require('fs');
 function testsmtp() {
     const creds = JSON.parse(fs.readFileSync('./creds.json'))
     const transporter = nodemailer.createTransport({
-        host: 'smtp-mail.outlook.com',
-        secureConnection: false,
-        port: 587,
-        auth: creds.auth,
-        tls: {
-            ciphers: 'SSLv3'
-        }
+        service: "Gmail",
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
+        auth: {
+            user: creds.google.user,
+            pass: creds.google.pass,
+        },
     });
     const message = {
-        from: creds.msauth.user,
-        // Comma separated list of recipients
-
-        subject: new Date().toISOString() + ' Scan from Canon',
-        to: 'gzhangx@hotmail.com',
-
+        from: creds.google.user,
+        // Comma separated list of recipients        
+        to: creds.testTo,
+        subject: "Hello from Nodemailer " + new Date().toISOString(),
         text: 'test',
         //attachments: [
         //{
@@ -52,7 +51,7 @@ function testLocal() {
         // Comma separated list of recipients
 
         subject: new Date().toISOString() + ' Scan from Canon',
-        to: 'gzhangx@hotmail.com',
+        to: creds.testTo,
                 
         text: 'test',
         //attachments: [
